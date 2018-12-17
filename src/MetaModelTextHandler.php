@@ -76,10 +76,9 @@ class MetaModelTextHandler implements MetaModelAttributeHandlerInterface
      */
     public function setValueInLanguage(int $itemId, string $language, string $value = null): void
     {
-        $dbValue = $this->attribute->getTranslatedDataFor([$itemId], $language);
-
-        $this->attribute->setTranslatedDataFor([$itemId => array_merge($dbValue[$itemId], [
-            'value' => $value
-        ])], $language);
+        $this->attribute->setTranslatedDataFor(
+            [$itemId => $this->attribute->widgetToValue($value, $itemId)],
+            $language
+        );
     }
 }
