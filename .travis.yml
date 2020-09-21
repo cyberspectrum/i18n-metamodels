@@ -1,5 +1,7 @@
 dist: xenial
 
+os: linux
+
 addons:
   apt:
     packages:
@@ -8,10 +10,9 @@ addons:
 language: php
 
 php:
-  - "7.2"
-  - "7.1"
-
-sudo: false
+  - '7.4'
+  - '7.3'
+  - '7.2'
 
 before_script:
   - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
