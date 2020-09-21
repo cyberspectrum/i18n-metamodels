@@ -25,6 +25,8 @@ use MetaModels\Attribute\ITranslated;
 
 /**
  * This interface describes an attribute handler factory.
+ *
+ * @SuppressWarnings(PHPMD.LongClassName)
  */
 interface MetaModelAttributeHandlerFactoryInterface
 {
