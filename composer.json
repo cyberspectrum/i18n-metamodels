@@ -21,13 +21,13 @@
     "source": "https://github.com/cyberspectrum/i18n-metamodels"
   },
   "require": {
-    "php": "^7.1.3",
-    "cyberspectrum/i18n": "^1.0.0@dev",
+    "php": "^7.4 || ^8.0",
+    "cyberspectrum/i18n": "dev-fix/phpcq-2 as 1.0.0@dev",
     "metamodels/core": "^2.1",
     "contao-community-alliance/dc-general": "^2.1"
   },
   "require-dev": {
-    "phpcq/all-tasks": "^1.3"
+    "phpcq/runner-bootstrap": "^1.0@dev"
   },
   "suggest": {
     "cyberspectrum/i18n-contao-bundle": "For integration in Contao and service registration."
@@ -45,6 +45,12 @@
   "extra": {
     "branch-alias": {
       "dev-master": "1.0.x-dev"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/package-versions-deprecated": true,
+      "contao-components/installer": false
     }
   }
 }
