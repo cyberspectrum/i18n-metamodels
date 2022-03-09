@@ -2,11 +2,10 @@
   "name": "cyberspectrum/i18n-metamodels",
   "description": "Simple translation mapping and exporting of metamodels",
   "license": "MIT",
+  "type": "library",
   "keywords": [
     "i18n"
   ],
-  "type": "library",
-  "homepage": "https://www.cyberspectrum.de/",
   "authors": [
     {
       "name": "Christian Schiffler",
@@ -15,6 +14,7 @@
       "role": "Maintainer"
     }
   ],
+  "homepage": "https://www.cyberspectrum.de/",
   "support": {
     "email": "info@cyberspectrum.de",
     "issues": "https://github.com/cyberspectrum/i18n-metamodels/issues",
@@ -22,9 +22,11 @@
   },
   "require": {
     "php": "^7.4 || ^8.0",
+    "contao-community-alliance/dc-general": "^2.1",
     "cyberspectrum/i18n": "dev-fix/phpcq-2 as 1.0.0@dev",
     "metamodels/core": "^2.1",
-    "contao-community-alliance/dc-general": "^2.1"
+    "psr/container": "^1.0 || ^2.0",
+    "psr/log": "^1.1.4 || ^2.0 || ^3.0"
   },
   "require-dev": {
     "phpcq/runner-bootstrap": "^1.0@dev"
@@ -42,15 +44,15 @@
       "CyberSpectrum\\I18N\\MetaModels\\Test\\": "tests"
     }
   },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "1.0.x-dev"
-    }
-  },
   "config": {
     "allow-plugins": {
       "composer/package-versions-deprecated": true,
       "contao-components/installer": false
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
     }
   }
 }

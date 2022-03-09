@@ -1,23 +1,6 @@
 <?php
 
-/**
- * This file is part of cyberspectrum/i18n-metamodels.
- *
- * (c) 2018 CyberSpectrum.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- *
- * This project is provided in good faith and hope to be usable by anyone.
- *
- * @package    cyberspectrum/i18n-metamodels
- * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
- * @copyright  2018 CyberSpectrum.
- * @license    https://github.com/cyberspectrum/i18n-metamodels/blob/master/LICENSE MIT
- * @filesource
- */
-
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace CyberSpectrum\I18N\MetaModels;
 
@@ -26,59 +9,61 @@ use CyberSpectrum\I18N\Exception\NotSupportedException;
 use CyberSpectrum\I18N\Exception\TranslationNotFoundException;
 use CyberSpectrum\I18N\TranslationValue\TranslationValueInterface;
 use CyberSpectrum\I18N\TranslationValue\WritableTranslationValueInterface;
+use IteratorIterator;
 use MetaModels\IMetaModel;
 use Psr\Log\LoggerAwareTrait;
-use Psr\Log\NullLogger;
+use Traversable;
+
+use function array_shift;
+use function explode;
+use function implode;
+use function in_array;
 
 /**
  * This provides an interface to translate MetaModel contents.
+ *
+ * @psalm-type TTraversableHandlers=Traversable<MetaModelAttributeHandlerInterface>
+ *
+ * @psalm-suppress InvalidTemplateParam - Somehow psalm cokes on the annotation for property $iterator.
  */
 class MetaModelDictionary implements WritableDictionaryInterface
 {
     use LoggerAwareTrait;
 
-    /**
-     * The MetaModel instance.
-     *
-     * @var IMetaModel
-     */
-    private $metaModel;
+    /** The MetaModel instance. */
+    private IMetaModel $metaModel;
 
-    /**
-     * The source language.
-     *
-     * @var string
-     */
-    private $sourceLanguage;
+    /** The source language. */
+    private string $sourceLanguage;
 
-    /**
-     * The target language.
-     *
-     * @var string
-     */
-    private $targetLanguage;
+    /** The target language. */
+    private string $targetLanguage;
 
     /**
      * The handlers.
      *
-     * @var MetaModelAttributeHandlerInterface[]
+     * @var TTraversableHandlers
      */
-    private $handlers;
+    private Traversable $handlers;
+
+    /** @var IteratorIterator<mixed, MetaModelAttributeHandlerInterface, TTraversableHandlers>|null */
+    private ?IteratorIterator $iterator;
+
+    /** @var array<int, MetaModelAttributeHandlerInterface> */
+    private array $iteratorBuffer;
 
     /**
      * The id list.
      *
-     * @var int[]
+     * @var null|list<string>
      */
-    private $ids;
+    private ?array $ids;
 
     /**
-     * Create a new instance.
-     *
-     * @param string                               $sourceLanguage The source language.
-     * @param string                               $targetLanguage The target language.
-     * @param IMetaModel                           $metaModel      The translation buffer.
-     * @param MetaModelAttributeHandlerInterface[] $handlers       The attribute handlers.
+     * @param string                                          $sourceLanguage The source language.
+     * @param string                                          $targetLanguage The target language.
+     * @param IMetaModel                                      $metaModel      The translation buffer.
+     * @param Traversable<MetaModelAttributeHandlerInterface> $handlers       The attribute handlers.
      *
      * @throws NotSupportedException When the MetaModel does not support either language.
      */
@@ -86,16 +71,16 @@ class MetaModelDictionary implements WritableDictionaryInterface
         string $sourceLanguage,
         string $targetLanguage,
         IMetaModel $metaModel,
-        array $handlers
+        Traversable $handlers
     ) {
-        $languages = $metaModel->getAvailableLanguages();
-        if (!\in_array($sourceLanguage, $languages, true)) {
+        $languages = $metaModel->getAvailableLanguages() ?? [];
+        if (!in_array($sourceLanguage, $languages, true)) {
             throw new NotSupportedException(
                 $this,
                 'MetaModel "' . $metaModel->getTableName() . '" does not support language "' . $sourceLanguage . '""'
             );
         }
-        if (!\in_array($targetLanguage, $languages, true)) {
+        if (!in_array($targetLanguage, $languages, true)) {
             throw new NotSupportedException(
                 $this,
                 'MetaModel "' . $metaModel->getTableName() . '" does not support language "' . $targetLanguage . '""'
@@ -107,29 +92,21 @@ class MetaModelDictionary implements WritableDictionaryInterface
         $this->metaModel      = $metaModel;
 
         $this->handlers = $handlers;
-
-        $this->setLogger(new NullLogger());
+        $this->iterator = null;
+        $this->iteratorBuffer = [];
+        $this->ids = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function keys(): \Traversable
+    public function keys(): Traversable
     {
         return $this->getAttributeKeys();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function get(string $key): TranslationValueInterface
     {
         return $this->getWritable($key);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function has(string $key): bool
     {
         foreach ($this->getAttributeKeys() as $candidate) {
@@ -141,17 +118,11 @@ class MetaModelDictionary implements WritableDictionaryInterface
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getSourceLanguage(): string
     {
         return $this->sourceLanguage;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getTargetLanguage(): string
     {
         return $this->targetLanguage;
@@ -182,12 +153,12 @@ class MetaModelDictionary implements WritableDictionaryInterface
      *
      * @throws TranslationNotFoundException When the translation is not contained.
      */
-    public function getWritable($key): WritableTranslationValueInterface
+    public function getWritable(string $key): WritableTranslationValueInterface
     {
         $explode = explode('.', $key);
-        $itemId  = (int) array_shift($explode);
+        $itemId  = array_shift($explode);
         $prefix  = implode('.', $explode);
-        foreach ($this->handlers as $handler) {
+        foreach ($this->getHandlerIterator() as $handler) {
             if ($handler->getPrefix() === $prefix) {
                 return new MetaModelTranslationValue(
                     $key,
@@ -205,12 +176,11 @@ class MetaModelDictionary implements WritableDictionaryInterface
     /**
      * Obtain all attribute keys.
      *
-     * @return \Generator
+     * @return Traversable<int, string>
      */
-    private function getAttributeKeys(): \Generator
+    private function getAttributeKeys(): Traversable
     {
-        foreach ($this->handlers as $attributeHandler) {
-            /** @var MetaModelAttributeHandlerInterface $attributeHandler */
+        foreach ($this->getHandlerIterator() as $attributeHandler) {
             $prefix = $attributeHandler->getPrefix();
             foreach ($this->idListGenerator() as $id) {
                 yield $id . '.' . $prefix;
@@ -221,14 +191,50 @@ class MetaModelDictionary implements WritableDictionaryInterface
     /**
      * Obtain all ids in the MetaModel.
      *
-     * @return \Generator
+     * @return Traversable<int, string>
      */
-    private function idListGenerator(): \Generator
+    private function idListGenerator(): Traversable
     {
         if (null === $this->ids) {
-            $this->ids = $this->metaModel->getIdsFromFilter(null);
+            /** @var list<string> $ids */
+            $ids = $this->metaModel->getIdsFromFilter(null);
+            $this->ids = $ids;
         }
 
         yield from $this->ids;
+    }
+
+    /**
+     * Create a generator reading all lines from the file.
+     *
+     * @return Traversable<MetaModelAttributeHandlerInterface>
+     */
+    public function getHandlerIterator(): Traversable
+    {
+        if (null === $this->iterator) {
+            $this->iterator = new IteratorIterator($this->handlers);
+            // See https://www.php.net/manual/en/class.iteratoriterator.php#120999
+            $this->iterator->rewind();
+        }
+
+        yield from call_user_func(function (): Traversable {
+            $index = 0;
+            while (true) {
+                // We can yield from buffer.
+                if (count($this->iteratorBuffer) > $index) {
+                    yield $this->iteratorBuffer[$index];
+                    $index++;
+                    continue;
+                }
+                // Fetch next handler if there is one.
+                assert($this->iterator instanceof IteratorIterator);
+                if (!$this->iterator->valid()) {
+                    break;
+                }
+                $handler = $this->iterator->current();
+                $this->iterator->next();
+                yield $this->iteratorBuffer[$index++] = $handler;
+            }
+        });
     }
 }

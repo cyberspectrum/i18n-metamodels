@@ -1,26 +1,10 @@
 <?php
 
-/**
- * This file is part of cyberspectrum/i18n-metamodels.
- *
- * (c) 2018 CyberSpectrum.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- *
- * This project is provided in good faith and hope to be usable by anyone.
- *
- * @package    cyberspectrum/i18n-metamodels
- * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
- * @copyright  2018 CyberSpectrum.
- * @license    https://github.com/cyberspectrum/i18n-metamodels/blob/master/LICENSE MIT
- * @filesource
- */
-
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace CyberSpectrum\I18N\MetaModels\Test;
 
+use ArrayIterator;
 use CyberSpectrum\I18N\Exception\NotSupportedException;
 use CyberSpectrum\I18N\Exception\TranslationNotFoundException;
 use CyberSpectrum\I18N\MetaModels\MetaModelAttributeHandlerInterface;
@@ -30,6 +14,8 @@ use MetaModels\IMetaModel;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use function iterator_to_array;
+
 /**
  * This tests the simple translation dictionary.
  *
@@ -37,11 +23,6 @@ use PHPUnit\Framework\TestCase;
  */
 class MetaModelDictionaryTest extends TestCase
 {
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testInstantiation(): void
     {
         $dictionary = $this->mockDictionary([
@@ -88,7 +69,7 @@ class MetaModelDictionaryTest extends TestCase
             '1.attribute2',
             '2.attribute2',
             '3.attribute2',
-        ], \iterator_to_array($dictionary->keys()));
+        ], iterator_to_array($dictionary->keys()));
 
         $this->assertTrue($dictionary->has('1.attribute1'));
         $this->assertTrue($dictionary->has('2.attribute1'));
@@ -104,11 +85,6 @@ class MetaModelDictionaryTest extends TestCase
         $this->assertFalse($value->isTargetEmpty());
     }
 
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testThrowsForUnknownSourceLanguage(): void
     {
         $metaModel = $this->mockMetaModel();
@@ -118,14 +94,9 @@ class MetaModelDictionaryTest extends TestCase
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage('MetaModel "mm_test" does not support language "en"');
 
-        new MetaModelDictionary('en', 'de', $metaModel, []);
+        new MetaModelDictionary('en', 'de', $metaModel, new ArrayIterator([]));
     }
 
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testThrowsForUnknownTargetLanguage(): void
     {
         $metaModel = $this->mockMetaModel();
@@ -135,14 +106,9 @@ class MetaModelDictionaryTest extends TestCase
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage('MetaModel "mm_test" does not support language "de"');
 
-        new MetaModelDictionary('en', 'de', $metaModel, []);
+        new MetaModelDictionary('en', 'de', $metaModel, new ArrayIterator([]));
     }
 
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testThrowsForUnknownKey(): void
     {
         $dictionary = $this->mockDictionary([]);
@@ -153,11 +119,6 @@ class MetaModelDictionaryTest extends TestCase
         $dictionary->get('unknown-key');
     }
 
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testHandlingOfEmptyValuesWorks(): void
     {
         $dictionary = $this->mockDictionary([
@@ -169,7 +130,7 @@ class MetaModelDictionaryTest extends TestCase
             ],
         ]);
 
-        $this->assertSame(['1.attribute1'], \iterator_to_array($dictionary->keys()));
+        $this->assertSame(['1.attribute1'], iterator_to_array($dictionary->keys()));
 
         $this->assertInstanceOf(MetaModelTranslationValue::class, $value = $dictionary->get('1.attribute1'));
         $this->assertSame('1.attribute1', $value->getKey());
@@ -178,11 +139,7 @@ class MetaModelDictionaryTest extends TestCase
         $this->assertTrue($value->isSourceEmpty());
         $this->assertTrue($value->isTargetEmpty());
     }
-    /**
-     * Test.
-     *
-     * @return void
-     */
+
     public function testAddingValuesThrows(): void
     {
         $this->expectException(NotSupportedException::class);
@@ -193,11 +150,6 @@ class MetaModelDictionaryTest extends TestCase
         $dictionary->add('test-key');
     }
 
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testRemovalThrows(): void
     {
         $dictionary = $this->mockDictionary([]);
@@ -225,16 +177,17 @@ class MetaModelDictionaryTest extends TestCase
         $metaModel->expects($this->never())->method('getAttributes');
         $metaModel->method('getAvailableLanguages')->willReturn(['en', 'de']);
 
-        $attValues = [];
-        foreach ($values as $id => $contents) {
-            foreach ($contents as $attribute => $langValues) {
-                $attValues[$attribute][$id] = $langValues;
+        $handlers = call_user_func(function () use ($values) {
+            $attValues = [];
+            foreach ($values as $id => $contents) {
+                foreach ($contents as $attribute => $langValues) {
+                    $attValues[$attribute][$id] = $langValues;
+                }
             }
-        }
-
-        $handlers = array_map(function ($values, $attribute) {
-            return $this->mockMetaModelAttributeHandler($attribute, $values);
-        }, $attValues, array_keys($attValues));
+            foreach ($attValues as $attribute => $values) {
+                yield $this->mockMetaModelAttributeHandler($attribute, $values);
+            }
+        });
 
         return new MetaModelDictionary('en', 'de', $metaModel, $handlers);
     }
@@ -265,9 +218,9 @@ class MetaModelDictionaryTest extends TestCase
 
         $handler->method('getPrefix')->willReturn($prefix);
         $handler->method('getValueInLanguage')->willReturnMap(array_merge(array_map(function ($value, $index) {
-            return [$index, 'en', $value['source']];
+            return [(string) $index, 'en', $value['source']];
         }, $values, array_keys($values)), array_map(function ($value, $index) {
-            return [$index, 'de', $value['target']];
+            return [(string) $index, 'de', $value['target']];
         }, $values, array_keys($values))));
 
         return $handler;
