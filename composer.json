@@ -21,12 +21,12 @@
     "source": "https://github.com/cyberspectrum/i18n-metamodels"
   },
   "require": {
-    "php": "^7.4 || ^8.0",
-    "contao-community-alliance/dc-general": "^2.1",
-    "cyberspectrum/i18n": "dev-fix/phpcq-2 as 1.0.0@dev",
-    "metamodels/core": "^2.1",
-    "psr/container": "^1.0 || ^2.0",
-    "psr/log": "^1.1.4 || ^2.0 || ^3.0"
+    "php": "^8.0",
+    "contao-community-alliance/dc-general": "^2.3",
+    "cyberspectrum/i18n": "^1.1@dev",
+    "metamodels/core": "^2.3.0@dev",
+    "psr/container": "^2.0",
+    "psr/log": "^3.0"
   },
   "require-dev": {
     "phpcq/runner-bootstrap": "^1.0@dev"
@@ -52,7 +52,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "1.0.x-dev"
+      "dev-fix/phpcq-2": "1.1.x-dev"
     }
   }
 }
