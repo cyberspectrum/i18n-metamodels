@@ -47,7 +47,8 @@
   "config": {
     "allow-plugins": {
       "composer/package-versions-deprecated": true,
-      "contao-components/installer": false
+      "contao-components/installer": false,
+      "php-http/discovery": true
     }
   },
   "extra": {
