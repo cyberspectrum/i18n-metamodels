@@ -16,6 +16,8 @@ use InvalidArgumentException;
  * @psalm-type TMetaModelDictionaryDefinitionConfigurationArray=array{
  *   name: string
  * }
+ *
+ * @api
  */
 class MetaModelDictionaryDefinitionBuilder implements DefinitionBuilderInterface
 {

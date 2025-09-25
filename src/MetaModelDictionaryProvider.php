@@ -20,6 +20,8 @@ use function iterator_to_array;
 
 /**
  * This is the dictionary provider for MetaModels.
+ *
+ * @api
  */
 class MetaModelDictionaryProvider implements DictionaryProviderInterface, WritableDictionaryProviderInterface
 {

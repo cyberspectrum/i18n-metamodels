@@ -13,6 +13,8 @@ use function get_class;
 
 /**
  * This generates the handlers.
+ *
+ * @api
  */
 class MetaModelHandlerFactory
 {

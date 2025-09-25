@@ -6,6 +6,8 @@ namespace CyberSpectrum\I18N\MetaModels;
 
 /**
  * This provides an interface to translate MetaModel contents.
+ *
+ * @api
  */
 interface MetaModelAttributeHandlerInterface
 {

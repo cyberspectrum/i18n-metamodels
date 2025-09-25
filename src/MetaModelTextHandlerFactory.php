@@ -7,7 +7,7 @@ namespace CyberSpectrum\I18N\MetaModels;
 use MetaModels\Attribute\ITranslated;
 
 /**
- * This interface describes an attribute handler factory.
+ * @api
  */
 class MetaModelTextHandlerFactory implements MetaModelAttributeHandlerFactoryInterface
 {
