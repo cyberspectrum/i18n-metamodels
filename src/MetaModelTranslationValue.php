@@ -9,7 +9,7 @@ use CyberSpectrum\I18N\TranslationValue\WritableTranslationValueInterface;
 /**
  * This handles reading and writing translations.
  */
-class MetaModelTranslationValue implements WritableTranslationValueInterface
+final class MetaModelTranslationValue implements WritableTranslationValueInterface
 {
     /** The key. */
     private string $key;

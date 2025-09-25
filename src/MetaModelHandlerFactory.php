@@ -16,7 +16,7 @@ use function get_class;
  *
  * @api
  */
-class MetaModelHandlerFactory
+final class MetaModelHandlerFactory
 {
     /** The handler factories. */
     private ContainerInterface $handlerFactories;

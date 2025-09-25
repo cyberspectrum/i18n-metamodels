@@ -26,7 +26,7 @@ use function in_array;
  *
  * @psalm-suppress InvalidTemplateParam - Somehow psalm cokes on the annotation for property $iterator.
  */
-class MetaModelDictionary implements WritableDictionaryInterface
+final class MetaModelDictionary implements WritableDictionaryInterface
 {
     use LoggerAwareTrait;
 

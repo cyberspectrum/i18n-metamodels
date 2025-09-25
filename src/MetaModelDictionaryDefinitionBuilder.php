@@ -19,7 +19,7 @@ use InvalidArgumentException;
  *
  * @api
  */
-class MetaModelDictionaryDefinitionBuilder implements DefinitionBuilderInterface
+final class MetaModelDictionaryDefinitionBuilder implements DefinitionBuilderInterface
 {
     /**
      * {@inheritDoc}

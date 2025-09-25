@@ -23,7 +23,7 @@ use function iterator_to_array;
  *
  * @api
  */
-class MetaModelDictionaryProvider implements DictionaryProviderInterface, WritableDictionaryProviderInterface
+final class MetaModelDictionaryProvider implements DictionaryProviderInterface, WritableDictionaryProviderInterface
 {
     use LoggerAwareTrait;
 

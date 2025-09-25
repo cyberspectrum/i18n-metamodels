@@ -9,7 +9,7 @@ use MetaModels\Attribute\ITranslated;
 /**
  * @api
  */
-class MetaModelTextHandlerFactory implements MetaModelAttributeHandlerFactoryInterface
+final class MetaModelTextHandlerFactory implements MetaModelAttributeHandlerFactoryInterface
 {
     #[\Override]
     public function create(ITranslated $attribute): MetaModelAttributeHandlerInterface

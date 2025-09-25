@@ -29,6 +29,7 @@
     "psr/log": "^2.0 || ^3.0"
   },
   "require-dev": {
+    "dg/bypass-finals": "^1.9",
     "phpcq/runner-bootstrap": "^1.0@dev"
   },
   "suggest": {
@@ -49,7 +50,8 @@
       "composer/package-versions-deprecated": true,
       "contao-components/installer": false,
       "php-http/discovery": true
-    }
+    },
+    "sort-packages": true
   },
   "extra": {
     "branch-alias": {

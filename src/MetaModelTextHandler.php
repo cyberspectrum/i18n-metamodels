@@ -7,7 +7,7 @@ namespace CyberSpectrum\I18N\MetaModels;
 use MetaModels\Attribute\ITranslated;
 
 /** This handles translated text attributes. */
-class MetaModelTextHandler implements MetaModelAttributeHandlerInterface
+final class MetaModelTextHandler implements MetaModelAttributeHandlerInterface
 {
     /** The translated attribute. */
     private ITranslated $attribute;
