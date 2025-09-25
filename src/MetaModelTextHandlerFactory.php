@@ -11,6 +11,7 @@ use MetaModels\Attribute\ITranslated;
  */
 class MetaModelTextHandlerFactory implements MetaModelAttributeHandlerFactoryInterface
 {
+    #[\Override]
     public function create(ITranslated $attribute): MetaModelAttributeHandlerInterface
     {
         return new MetaModelTextHandler($attribute);

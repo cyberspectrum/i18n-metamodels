@@ -49,46 +49,55 @@ class MetaModelTranslationValue implements WritableTranslationValueInterface
         $this->targetLanguage = $targetLanguage;
     }
 
+    #[\Override]
     public function getKey(): string
     {
         return $this->key;
     }
 
+    #[\Override]
     public function getSource(): ?string
     {
         return $this->handler->getValueInLanguage($this->itemId, $this->sourceLanguage);
     }
 
+    #[\Override]
     public function getTarget(): ?string
     {
         return $this->handler->getValueInLanguage($this->itemId, $this->targetLanguage);
     }
 
+    #[\Override]
     public function isSourceEmpty(): bool
     {
         return empty($this->getSource());
     }
 
+    #[\Override]
     public function isTargetEmpty(): bool
     {
         return empty($this->getTarget());
     }
 
+    #[\Override]
     public function setSource(string $value): void
     {
         $this->handler->setValueInLanguage($this->itemId, $this->sourceLanguage, $value);
     }
 
+    #[\Override]
     public function setTarget(string $value): void
     {
         $this->handler->setValueInLanguage($this->itemId, $this->targetLanguage, $value);
     }
 
+    #[\Override]
     public function clearSource(): void
     {
         $this->handler->setValueInLanguage($this->itemId, $this->sourceLanguage, null);
     }
 
+    #[\Override]
     public function clearTarget(): void
     {
         $this->handler->setValueInLanguage($this->itemId, $this->targetLanguage, null);

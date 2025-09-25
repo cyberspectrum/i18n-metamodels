@@ -46,6 +46,7 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
      *
      * @throws RuntimeException When the MetaModel instance could not be obtained.
      */
+    #[\Override]
     public function getAvailableDictionaries(): Traversable
     {
         foreach ($this->factory->collectNames() as $name) {
@@ -73,6 +74,7 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
      *
      * @throws DictionaryNotFoundException When the MetaModel does not exist.
      */
+    #[\Override]
     public function getDictionary(
         string $name,
         string $sourceLanguage,
@@ -99,6 +101,7 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
         return $dictionary;
     }
 
+    #[\Override]
     public function getAvailableWritableDictionaries(): Traversable
     {
         foreach ($this->getAvailableDictionaries() as $item) {
@@ -111,6 +114,7 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
      *
      * @throws DictionaryNotFoundException When the MetaModel does not exist.
      */
+    #[\Override]
     public function getDictionaryForWrite(
         string $name,
         string $sourceLanguage,
@@ -142,6 +146,7 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
      *
      * @throws RuntimeException Creating dictionaries is not supported.
      */
+    #[\Override]
     public function createDictionary(
         string $name,
         string $sourceLanguage,

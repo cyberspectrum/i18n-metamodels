@@ -21,11 +21,13 @@ class MetaModelTextHandler implements MetaModelAttributeHandlerInterface
         $this->prefix    = $this->attribute->getColName();
     }
 
+    #[\Override]
     public function getPrefix(): string
     {
         return $this->prefix;
     }
 
+    #[\Override]
     public function getValueInLanguage(string $itemId, string $language): ?string
     {
         /** @var null|array<string, array{value: string}> $value */
@@ -34,6 +36,7 @@ class MetaModelTextHandler implements MetaModelAttributeHandlerInterface
         return $value ? $value[$itemId]['value'] : '';
     }
 
+    #[\Override]
     public function setValueInLanguage(string $itemId, string $language, ?string $value): void
     {
         $this->attribute->setTranslatedDataFor(

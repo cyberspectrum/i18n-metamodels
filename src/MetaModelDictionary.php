@@ -97,16 +97,19 @@ class MetaModelDictionary implements WritableDictionaryInterface
         $this->ids = null;
     }
 
+    #[\Override]
     public function keys(): Traversable
     {
         return $this->getAttributeKeys();
     }
 
+    #[\Override]
     public function get(string $key): TranslationValueInterface
     {
         return $this->getWritable($key);
     }
 
+    #[\Override]
     public function has(string $key): bool
     {
         foreach ($this->getAttributeKeys() as $candidate) {
@@ -118,11 +121,13 @@ class MetaModelDictionary implements WritableDictionaryInterface
         return false;
     }
 
+    #[\Override]
     public function getSourceLanguage(): string
     {
         return $this->sourceLanguage;
     }
 
+    #[\Override]
     public function getTargetLanguage(): string
     {
         return $this->targetLanguage;
@@ -133,6 +138,7 @@ class MetaModelDictionary implements WritableDictionaryInterface
      *
      * @throws NotSupportedException This class does not support adding.
      */
+    #[\Override]
     public function add(string $key): WritableTranslationValueInterface
     {
         throw new NotSupportedException($this, 'Adding to MetaModels is not supported at the moment.');
@@ -143,6 +149,7 @@ class MetaModelDictionary implements WritableDictionaryInterface
      *
      * @throws NotSupportedException This class does not support removing.
      */
+    #[\Override]
     public function remove(string $key): void
     {
         throw new NotSupportedException($this, 'Removing from MetaModels is not supported at the moment.');
@@ -153,6 +160,7 @@ class MetaModelDictionary implements WritableDictionaryInterface
      *
      * @throws TranslationNotFoundException When the translation is not contained.
      */
+    #[\Override]
     public function getWritable(string $key): WritableTranslationValueInterface
     {
         $explode = explode('.', $key);
