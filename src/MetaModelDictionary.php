@@ -29,6 +29,7 @@ use function in_array;
 final class MetaModelDictionary implements WritableDictionaryInterface
 {
     use LoggerAwareTrait;
+    use AvailableLanguagesTrait;
 
     /** The MetaModel instance. */
     private IMetaModel $metaModel;
@@ -73,7 +74,7 @@ final class MetaModelDictionary implements WritableDictionaryInterface
         IMetaModel $metaModel,
         Traversable $handlers
     ) {
-        $languages = $metaModel->getAvailableLanguages() ?? [];
+        $languages = $this->getAvailableLanguagesFrom($metaModel) ?? [];
         if (!in_array($sourceLanguage, $languages, true)) {
             throw new NotSupportedException(
                 $this,

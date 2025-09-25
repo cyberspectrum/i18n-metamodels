@@ -26,6 +26,7 @@ use function iterator_to_array;
 final class MetaModelDictionaryProvider implements DictionaryProviderInterface, WritableDictionaryProviderInterface
 {
     use LoggerAwareTrait;
+    use AvailableLanguagesTrait;
 
     /** The MetaModel factory. */
     private IFactory $factory;
@@ -56,7 +57,7 @@ final class MetaModelDictionaryProvider implements DictionaryProviderInterface, 
             if (null === $metaModel) {
                 throw new RuntimeException('Unable to get instance of MetaModel ' . $name);
             }
-            if (null === ($languages = $metaModel->getAvailableLanguages())) {
+            if (null === ($languages = $this->getAvailableLanguagesFrom($metaModel))) {
                 continue;
             }
             foreach ($languages as $sourceLanguage) {
