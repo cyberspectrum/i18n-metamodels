@@ -59,7 +59,6 @@ final class MetaModelDictionaryProvider implements DictionaryProviderInterface, 
             if (null === ($languages = $metaModel->getAvailableLanguages())) {
                 continue;
             }
-            /** @var list<string> $languages */
             foreach ($languages as $sourceLanguage) {
                 foreach ($languages as $targetLanguage) {
                     if ($sourceLanguage === $targetLanguage) {

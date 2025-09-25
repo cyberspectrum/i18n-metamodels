@@ -204,9 +204,7 @@ final class MetaModelDictionary implements WritableDictionaryInterface
     private function idListGenerator(): Traversable
     {
         if (null === $this->ids) {
-            /** @var list<string> $ids */
-            $ids = $this->metaModel->getIdsFromFilter(null);
-            $this->ids = $ids;
+            $this->ids = $this->metaModel->getIdsFromFilter(null);
         }
 
         yield from $this->ids;
@@ -215,7 +213,7 @@ final class MetaModelDictionary implements WritableDictionaryInterface
     /**
      * Create a generator reading all lines from the file.
      *
-     * @return Traversable<MetaModelAttributeHandlerInterface>
+     * @return Traversable<int, MetaModelAttributeHandlerInterface>
      */
     public function getHandlerIterator(): Traversable
     {
@@ -240,6 +238,7 @@ final class MetaModelDictionary implements WritableDictionaryInterface
                     break;
                 }
                 $handler = $this->iterator->current();
+                assert($handler instanceof MetaModelAttributeHandlerInterface);
                 $this->iterator->next();
                 yield $this->iteratorBuffer[$index++] = $handler;
             }

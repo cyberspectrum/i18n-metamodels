@@ -70,13 +70,13 @@ final class MetaModelTranslationValue implements WritableTranslationValueInterfa
     #[\Override]
     public function isSourceEmpty(): bool
     {
-        return empty($this->getSource());
+        return '' === (string) $this->getSource();
     }
 
     #[\Override]
     public function isTargetEmpty(): bool
     {
-        return empty($this->getTarget());
+        return '' === (string) $this->getTarget();
     }
 
     #[\Override]

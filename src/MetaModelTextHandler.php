@@ -33,12 +33,13 @@ final class MetaModelTextHandler implements MetaModelAttributeHandlerInterface
         /** @var null|array<string, array{value: string}> $value */
         $value = $this->attribute->getTranslatedDataFor([$itemId], $language);
 
-        return $value ? $value[$itemId]['value'] : '';
+        return $value[$itemId]['value'] ?? '';
     }
 
     #[\Override]
     public function setValueInLanguage(string $itemId, string $language, ?string $value): void
     {
+        /** @psalm-suppress MixedArgumentTypeCoercion */
         $this->attribute->setTranslatedDataFor(
             [$itemId => $this->attribute->widgetToValue($value, $itemId)],
             $language
