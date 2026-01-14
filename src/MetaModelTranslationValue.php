@@ -1,23 +1,6 @@
 <?php
 
-/**
- * This file is part of cyberspectrum/i18n-metamodels.
- *
- * (c) 2018 CyberSpectrum.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- *
- * This project is provided in good faith and hope to be usable by anyone.
- *
- * @package    cyberspectrum/i18n-metamodels
- * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
- * @copyright  2018 CyberSpectrum.
- * @license    https://github.com/cyberspectrum/i18n-metamodels/blob/master/LICENSE MIT
- * @filesource
- */
-
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace CyberSpectrum\I18N\MetaModels;
 
@@ -26,54 +9,39 @@ use CyberSpectrum\I18N\TranslationValue\WritableTranslationValueInterface;
 /**
  * This handles reading and writing translations.
  */
-class MetaModelTranslationValue implements WritableTranslationValueInterface
+final class MetaModelTranslationValue implements WritableTranslationValueInterface
 {
-    /**
-     * The key.
-     *
-     * @var string
-     */
-    private $key;
+    /** The key. */
+    private string $key;
 
-    /**
-     * The item id.
-     *
-     * @var int
-     */
-    private $itemId;
+    /** The item id. */
+    private string $itemId;
 
-    /**
-     * The attribute handler.
-     *
-     * @var MetaModelAttributeHandlerInterface
-     */
-    private $handler;
+    /** The attribute handler. */
+    private MetaModelAttributeHandlerInterface $handler;
 
-    /**
-     * The source language.
-     *
-     * @var string
-     */
-    private $sourceLanguage;
+    /** The source language. */
+    private string $sourceLanguage;
 
-    /**
-     * The destination language.
-     *
-     * @var string
-     */
-    private $targetLanguage;
+    /** The destination language. */
+    private string $targetLanguage;
 
     /**
      * Create a new instance.
      *
      * @param string                             $key            The key of the entry.
-     * @param int                                $itemId         The id of the entry.
+     * @param string                             $itemId         The id of the entry.
      * @param MetaModelAttributeHandlerInterface $handler        The handler.
      * @param string                             $sourceLanguage The source language.
      * @param string                             $targetLanguage The destination language.
      */
-    public function __construct($key, $itemId, $handler, string $sourceLanguage, string $targetLanguage)
-    {
+    public function __construct(
+        string $key,
+        string $itemId,
+        MetaModelAttributeHandlerInterface $handler,
+        string $sourceLanguage,
+        string $targetLanguage
+    ) {
         $this->key            = $key;
         $this->itemId         = $itemId;
         $this->handler        = $handler;
@@ -81,78 +49,56 @@ class MetaModelTranslationValue implements WritableTranslationValueInterface
         $this->targetLanguage = $targetLanguage;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    #[\Override]
     public function getKey(): string
     {
         return $this->key;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    #[\Override]
     public function getSource(): ?string
     {
         return $this->handler->getValueInLanguage($this->itemId, $this->sourceLanguage);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    #[\Override]
     public function getTarget(): ?string
     {
         return $this->handler->getValueInLanguage($this->itemId, $this->targetLanguage);
     }
 
-    /**
-     * Check if the source value is empty.
-     *
-     * @return bool
-     */
+    #[\Override]
     public function isSourceEmpty(): bool
     {
-        return empty($this->getSource());
+        return '' === (string) $this->getSource();
     }
 
-    /**
-     * Check if the target value is empty.
-     *
-     * @return bool
-     */
+    #[\Override]
     public function isTargetEmpty(): bool
     {
-        return empty($this->getTarget());
+        return '' === (string) $this->getTarget();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setSource(string $value)
+    #[\Override]
+    public function setSource(string $value): void
     {
         $this->handler->setValueInLanguage($this->itemId, $this->sourceLanguage, $value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setTarget(string $value)
+    #[\Override]
+    public function setTarget(string $value): void
     {
         $this->handler->setValueInLanguage($this->itemId, $this->targetLanguage, $value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function clearSource()
+    #[\Override]
+    public function clearSource(): void
     {
         $this->handler->setValueInLanguage($this->itemId, $this->sourceLanguage, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function clearTarget()
+    #[\Override]
+    public function clearTarget(): void
     {
         $this->handler->setValueInLanguage($this->itemId, $this->targetLanguage, null);
     }

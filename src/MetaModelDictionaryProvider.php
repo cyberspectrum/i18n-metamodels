@@ -1,23 +1,6 @@
 <?php
 
-/**
- * This file is part of cyberspectrum/i18n-metamodels.
- *
- * (c) 2018 CyberSpectrum.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- *
- * This project is provided in good faith and hope to be usable by anyone.
- *
- * @package    cyberspectrum/i18n-metamodels
- * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
- * @copyright  2018 CyberSpectrum.
- * @license    https://github.com/cyberspectrum/i18n-metamodels/blob/master/LICENSE MIT
- * @filesource
- */
-
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace CyberSpectrum\I18N\MetaModels;
 
@@ -30,32 +13,28 @@ use CyberSpectrum\I18N\Exception\DictionaryNotFoundException;
 use MetaModels\IFactory;
 use MetaModels\IMetaModel;
 use Psr\Log\LoggerAwareTrait;
-use Psr\Log\NullLogger;
+use RuntimeException;
+use Traversable;
+
+use function iterator_to_array;
 
 /**
  * This is the dictionary provider for MetaModels.
+ *
+ * @api
  */
-class MetaModelDictionaryProvider implements DictionaryProviderInterface, WritableDictionaryProviderInterface
+final class MetaModelDictionaryProvider implements DictionaryProviderInterface, WritableDictionaryProviderInterface
 {
     use LoggerAwareTrait;
+    use AvailableLanguagesTrait;
+
+    /** The MetaModel factory. */
+    private IFactory $factory;
+
+    /** The handler factory. */
+    private MetaModelHandlerFactory $handlerFactory;
 
     /**
-     * The MetaModel factory.
-     *
-     * @var IFactory
-     */
-    private $factory;
-
-    /**
-     * The handler factory.
-     *
-     * @var MetaModelHandlerFactory
-     */
-    private $handlerFactory;
-
-    /**
-     * Create a new instance.
-     *
      * @param IFactory                $factory        The MetaModels factory.
      * @param MetaModelHandlerFactory $handlerFactory The handler factory.
      */
@@ -63,24 +42,24 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
     {
         $this->factory        = $factory;
         $this->handlerFactory = $handlerFactory;
-        $this->setLogger(new NullLogger());
     }
 
     /**
      * {@inheritDoc}
      *
-     * @return \Traversable|DictionaryInformation[]
-     *
-     * @throws \RuntimeException When the MetaModel instance could not be obtained.
+     * @throws RuntimeException When the MetaModel instance could not be obtained.
      */
-    public function getAvailableDictionaries(): \Traversable
+    #[\Override]
+    public function getAvailableDictionaries(): Traversable
     {
         foreach ($this->factory->collectNames() as $name) {
             $metaModel = $this->factory->getMetaModel($name);
             if (null === $metaModel) {
-                throw new \RuntimeException('Unable to get instance of MetaModel ' . $name);
+                throw new RuntimeException('Unable to get instance of MetaModel ' . $name);
             }
-            $languages = $metaModel->getAvailableLanguages();
+            if (null === ($languages = $this->getAvailableLanguagesFrom($metaModel))) {
+                continue;
+            }
             foreach ($languages as $sourceLanguage) {
                 foreach ($languages as $targetLanguage) {
                     if ($sourceLanguage === $targetLanguage) {
@@ -97,6 +76,7 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
      *
      * @throws DictionaryNotFoundException When the MetaModel does not exist.
      */
+    #[\Override]
     public function getDictionary(
         string $name,
         string $sourceLanguage,
@@ -106,7 +86,9 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
         if (null === $metaModel = $this->factory->getMetaModel($name)) {
             throw new DictionaryNotFoundException($name, $sourceLanguage, $targetLanguage);
         }
-        $this->logger->debug('MetaModels: opening dictionary ' . $name);
+        if ($this->logger) {
+            $this->logger->debug('MetaModels: opening dictionary ' . $name);
+        }
 
         $dictionary = new MetaModelDictionary(
             $sourceLanguage,
@@ -114,17 +96,15 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
             $metaModel,
             $this->getHandlersFor($metaModel)
         );
-        $dictionary->setLogger($this->logger);
+        if ($this->logger) {
+            $dictionary->setLogger($this->logger);
+        }
 
         return $dictionary;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return \Traversable|DictionaryInformation[]
-     */
-    public function getAvailableWritableDictionaries(): \Traversable
+    #[\Override]
+    public function getAvailableWritableDictionaries(): Traversable
     {
         foreach ($this->getAvailableDictionaries() as $item) {
             yield new DictionaryInformation($item->getName(), $item->getSourceLanguage(), $item->getTargetLanguage());
@@ -136,6 +116,7 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
      *
      * @throws DictionaryNotFoundException When the MetaModel does not exist.
      */
+    #[\Override]
     public function getDictionaryForWrite(
         string $name,
         string $sourceLanguage,
@@ -145,7 +126,9 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
         if (null === $metaModel = $this->factory->getMetaModel($name)) {
             throw new DictionaryNotFoundException($name, $sourceLanguage, $targetLanguage);
         }
-        $this->logger->debug('MetaModels: opening writable dictionary ' . $name);
+        if ($this->logger) {
+            $this->logger->debug('MetaModels: opening writable dictionary ' . $name);
+        }
 
         $dictionary = new MetaModelDictionary(
             $sourceLanguage,
@@ -153,7 +136,9 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
             $metaModel,
             $this->getHandlersFor($metaModel)
         );
-        $dictionary->setLogger($this->logger);
+        if ($this->logger) {
+            $dictionary->setLogger($this->logger);
+        }
 
         return $dictionary;
     }
@@ -161,15 +146,16 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
     /**
      * {@inheritDoc}
      *
-     * @throws \RuntimeException Creating dictionaries is not supported.
+     * @throws RuntimeException Creating dictionaries is not supported.
      */
+    #[\Override]
     public function createDictionary(
         string $name,
         string $sourceLanguage,
         string $targetLanguage,
         array $customData = []
     ): WritableDictionaryInterface {
-        throw new \RuntimeException('Creating MetaModels is not supported.');
+        throw new RuntimeException('Creating MetaModels is not supported.');
     }
 
     /**
@@ -177,10 +163,10 @@ class MetaModelDictionaryProvider implements DictionaryProviderInterface, Writab
      *
      * @param IMetaModel $metaModel The metamodel instance.
      *
-     * @return MetaModelAttributeHandlerInterface[]
+     * @return Traversable<int, MetaModelAttributeHandlerInterface>
      */
-    private function getHandlersFor(IMetaModel $metaModel): array
+    private function getHandlersFor(IMetaModel $metaModel): Traversable
     {
-        return \iterator_to_array($this->handlerFactory->generate($metaModel));
+        return $this->handlerFactory->generate($metaModel);
     }
 }

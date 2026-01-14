@@ -1,23 +1,6 @@
 <?php
 
-/**
- * This file is part of cyberspectrum/i18n-metamodels.
- *
- * (c) 2018 CyberSpectrum.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- *
- * This project is provided in good faith and hope to be usable by anyone.
- *
- * @package    cyberspectrum/i18n-metamodels
- * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
- * @copyright  2018 CyberSpectrum.
- * @license    https://github.com/cyberspectrum/i18n-metamodels/blob/master/LICENSE MIT
- * @filesource
- */
-
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace CyberSpectrum\I18N\MetaModels\Test;
 
@@ -28,21 +11,13 @@ use CyberSpectrum\I18N\MetaModels\MetaModelDictionaryProvider;
 use CyberSpectrum\I18N\MetaModels\MetaModelHandlerFactory;
 use MetaModels\IFactory;
 use MetaModels\IMetaModel;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * This tests the xliff provider.
- *
- * @covers \CyberSpectrum\I18N\MetaModels\MetaModelDictionaryProvider
- */
+#[CoversClass(MetaModelDictionaryProvider::class)]
 class MetaModelDictionaryProviderTest extends TestCase
 {
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testGetAvailableDictionaries(): void
     {
         $provider = new MetaModelDictionaryProvider(
@@ -61,11 +36,6 @@ class MetaModelDictionaryProviderTest extends TestCase
         $this->assertInstanceOf(DictionaryInformation::class, $result[1]);
     }
 
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testGetDictionary(): void
     {
         $provider = new MetaModelDictionaryProvider(
@@ -76,11 +46,6 @@ class MetaModelDictionaryProviderTest extends TestCase
         $this->assertInstanceOf(MetaModelDictionary::class, $provider->getDictionary('mm_test', 'en', 'de'));
     }
 
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testThrowsForUnknownDictionary(): void
     {
         $provider = new MetaModelDictionaryProvider($this->mockFactory([]), $this->mockHandler());
@@ -93,11 +58,6 @@ class MetaModelDictionaryProviderTest extends TestCase
         $provider->getDictionary('unknown', 'en', 'de');
     }
 
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testGetWritable(): void
     {
         $provider = new MetaModelDictionaryProvider(
@@ -108,11 +68,6 @@ class MetaModelDictionaryProviderTest extends TestCase
         $this->assertInstanceOf(MetaModelDictionary::class, $provider->getDictionaryForWrite('mm_test', 'en', 'de'));
     }
 
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testThrowsForUnknownDictionaryForWrite(): void
     {
         $provider = new MetaModelDictionaryProvider($this->mockFactory([]), $this->mockHandler());
@@ -125,11 +80,6 @@ class MetaModelDictionaryProviderTest extends TestCase
         $provider->getDictionaryForWrite('unknown', 'en', 'de');
     }
 
-    /**
-     * Test.
-     *
-     * @return void
-     */
     public function testCreateDictionaryIsNotSupported(): void
     {
         $provider = new MetaModelDictionaryProvider($this->mockFactory([]), $this->mockHandler());
@@ -149,13 +99,13 @@ class MetaModelDictionaryProviderTest extends TestCase
      */
     private function mockFactory(array $metaModels): IFactory
     {
-        $mock = $this->getMockForAbstractClass(IFactory::class);
+        $mock = $this->getMockBuilder(IFactory::class)->getMock();
         $mock->method('collectNames')->willReturn(array_keys($metaModels));
         foreach ($metaModels as $name => $languages) {
             $mock
                 ->method('getMetaModel')
                 ->with($name)
-                ->willReturn($metaModel = $this->getMockForAbstractClass(IMetaModel::class));
+                ->willReturn($metaModel = $this->getMockBuilder(IMetaModel::class)->getMock());
             $metaModel->method('getAvailableLanguages')->willReturn($languages);
         }
 

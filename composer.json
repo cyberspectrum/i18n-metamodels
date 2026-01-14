@@ -2,11 +2,10 @@
   "name": "cyberspectrum/i18n-metamodels",
   "description": "Simple translation mapping and exporting of metamodels",
   "license": "MIT",
+  "type": "library",
   "keywords": [
     "i18n"
   ],
-  "type": "library",
-  "homepage": "https://www.cyberspectrum.de/",
   "authors": [
     {
       "name": "Christian Schiffler",
@@ -15,19 +14,23 @@
       "role": "Maintainer"
     }
   ],
+  "homepage": "https://www.cyberspectrum.de/",
   "support": {
     "email": "info@cyberspectrum.de",
     "issues": "https://github.com/cyberspectrum/i18n-metamodels/issues",
     "source": "https://github.com/cyberspectrum/i18n-metamodels"
   },
   "require": {
-    "php": "^7.1.3",
-    "cyberspectrum/i18n": "^1.0.0@dev",
-    "metamodels/core": "^2.1",
-    "contao-community-alliance/dc-general": "^2.1"
+    "php": "^8.2",
+    "contao-community-alliance/dc-general": "^2.3",
+    "cyberspectrum/i18n": "^1.0",
+    "metamodels/core": "^2.3.0",
+    "psr/container": "^1.0 || ^2.0",
+    "psr/log": "^2.0 || ^3.0"
   },
   "require-dev": {
-    "phpcq/all-tasks": "^1.3"
+    "dg/bypass-finals": "^1.9",
+    "phpcq/runner-bootstrap": "^1.0@dev"
   },
   "suggest": {
     "cyberspectrum/i18n-contao-bundle": "For integration in Contao and service registration."
@@ -42,9 +45,17 @@
       "CyberSpectrum\\I18N\\MetaModels\\Test\\": "tests"
     }
   },
+  "config": {
+    "allow-plugins": {
+      "composer/package-versions-deprecated": true,
+      "contao-components/installer": false,
+      "php-http/discovery": true
+    },
+    "sort-packages": true
+  },
   "extra": {
     "branch-alias": {
-      "dev-master": "1.0.x-dev"
+      "dev-master": "1.1.x-dev"
     }
   }
 }
