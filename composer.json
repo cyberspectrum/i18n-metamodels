@@ -21,10 +21,10 @@
     "source": "https://github.com/cyberspectrum/i18n-metamodels"
   },
   "require": {
-    "php": "^8.1",
+    "php": "^8.2",
     "contao-community-alliance/dc-general": "^2.3",
-    "cyberspectrum/i18n": "^1.1@dev",
-    "metamodels/core": "^2.3.0@dev",
+    "cyberspectrum/i18n": "^1.0",
+    "metamodels/core": "^2.3.0",
     "psr/container": "^1.0 || ^2.0",
     "psr/log": "^2.0 || ^3.0"
   },
