@@ -11,16 +11,13 @@ use CyberSpectrum\I18N\MetaModels\MetaModelAttributeHandlerInterface;
 use CyberSpectrum\I18N\MetaModels\MetaModelDictionary;
 use CyberSpectrum\I18N\MetaModels\MetaModelTranslationValue;
 use MetaModels\IMetaModel;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 use function iterator_to_array;
 
-/**
- * This tests the simple translation dictionary.
- *
- * @covers \CyberSpectrum\I18N\MetaModels\MetaModelDictionary
- */
+#[CoversClass(MetaModelDictionary::class)]
 class MetaModelDictionaryTest extends TestCase
 {
     public function testInstantiation(): void
@@ -199,7 +196,7 @@ class MetaModelDictionaryTest extends TestCase
      */
     private function mockMetaModel(): IMetaModel
     {
-        return $this->getMockForAbstractClass(IMetaModel::class);
+        return $this->getMockBuilder(IMetaModel::class)->getMock();
     }
 
     /**
@@ -214,7 +211,7 @@ class MetaModelDictionaryTest extends TestCase
     {
         $handler = $this
             ->getMockBuilder(MetaModelAttributeHandlerInterface::class)
-            ->getMockForAbstractClass();
+            ->getMock();
 
         $handler->method('getPrefix')->willReturn($prefix);
         $handler->method('getValueInLanguage')->willReturnMap(array_merge(array_map(function ($value, $index) {

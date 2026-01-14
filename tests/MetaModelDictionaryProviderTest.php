@@ -11,14 +11,11 @@ use CyberSpectrum\I18N\MetaModels\MetaModelDictionaryProvider;
 use CyberSpectrum\I18N\MetaModels\MetaModelHandlerFactory;
 use MetaModels\IFactory;
 use MetaModels\IMetaModel;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * This tests the xliff provider.
- *
- * @covers \CyberSpectrum\I18N\MetaModels\MetaModelDictionaryProvider
- */
+#[CoversClass(MetaModelDictionaryProvider::class)]
 class MetaModelDictionaryProviderTest extends TestCase
 {
     public function testGetAvailableDictionaries(): void
@@ -102,13 +99,13 @@ class MetaModelDictionaryProviderTest extends TestCase
      */
     private function mockFactory(array $metaModels): IFactory
     {
-        $mock = $this->getMockForAbstractClass(IFactory::class);
+        $mock = $this->getMockBuilder(IFactory::class)->getMock();
         $mock->method('collectNames')->willReturn(array_keys($metaModels));
         foreach ($metaModels as $name => $languages) {
             $mock
                 ->method('getMetaModel')
                 ->with($name)
-                ->willReturn($metaModel = $this->getMockForAbstractClass(IMetaModel::class));
+                ->willReturn($metaModel = $this->getMockBuilder(IMetaModel::class)->getMock());
             $metaModel->method('getAvailableLanguages')->willReturn($languages);
         }
 
