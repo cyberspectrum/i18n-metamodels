@@ -22,7 +22,7 @@
   },
   "require": {
     "php": "^8.2",
-    "contao-community-alliance/dc-general": "^2.3",
+    "contao-community-alliance/dc-general": "^2.4",
     "cyberspectrum/i18n": "^1.0",
     "metamodels/core": "^2.3.0",
     "psr/container": "^1.0 || ^2.0",
